@@ -14,7 +14,13 @@ export async function GET() {
     try {
         const habits = await prisma.habit.findMany({
             where: { userId: session.user.id },
-            include: { logs: true },
+            select: {
+                id: true,
+                createdAt: true,
+                logs: {
+                    select: { date: true }
+                }
+            }
         });
 
         if (habits.length === 0) {
