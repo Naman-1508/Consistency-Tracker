@@ -42,7 +42,7 @@ We use three core models:
 
 **1. Clone the repository**
 ```bash
-git clone <repository_url>
+git clone https://github.com/Naman-1508/Consistency-Tracker
 cd consistency-tracker
 ```
 
