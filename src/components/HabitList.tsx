@@ -24,7 +24,7 @@ interface HabitListProps {
 export default function HabitList({ habits, onTrack, onTrackRequest, onEdit, onDelete }: HabitListProps) {
   const today = format(new Date(), "yyyy-MM-dd");
 
-  if (habits.length === 0) {
+  if (!habits || habits.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-20 px-4 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-900/30 text-center backdrop-blur-xl transition-colors duration-300 animate-in fade-in zoom-in-95 duration-500 shadow-inner">
         <div className="relative w-20 h-20 mb-6 flex items-center justify-center group">

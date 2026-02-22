@@ -10,8 +10,8 @@ export function useDashboardData() {
     const isError = habitsError || statsError;
 
     return {
-        habits,
-        stats,
+        habits: Array.isArray(habits) ? habits : [],
+        stats: stats || null,
         isLoading,
         isError,
         mutateHabits,
