@@ -3,7 +3,7 @@
 A modern, full-stack web application designed to help users track their daily habits and build consistent routines over time.
 
 ## 🚀 Live Demo
-*(Insert Live Deployment URL here)*
+https://consistency-tracker-delta.vercel.app
 
 ## ✨ Features
 - **User Authentication**: Secure Registration & Login using NextAuth and bcrypt.
