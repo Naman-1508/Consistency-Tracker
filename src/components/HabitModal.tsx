@@ -3,6 +3,7 @@ import { Button } from "./ui/Button";
 import { Input } from "./ui/Input";
 import { X } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { CustomSelect } from "./ui/CustomSelect";
 
 interface HabitModalProps {
   isOpen: boolean;
@@ -124,14 +125,12 @@ export default function HabitModal({ isOpen, onClose, onSave, initialData }: Hab
                 <label className="text-sm font-semibold text-slate-700 dark:text-slate-300 ml-1" htmlFor="category">
                   Category
                 </label>
-                <select
-                  id="category"
+                <CustomSelect
                   value={category}
-                  onChange={(e) => setCategory(e.target.value)}
-                  className="flex h-12 w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 dark:border-slate-800 dark:bg-slate-950/50 text-slate-900 dark:text-slate-200 transition-all duration-300"
-                >
-                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
-                </select>
+                  onChange={setCategory}
+                  options={CATEGORIES.map(c => ({ value: c, label: c }))}
+                  className="bg-slate-50/50 dark:bg-slate-950/50"
+                />
               </div>
 
               <div className="space-y-3 bg-slate-50/50 dark:bg-slate-800/20 p-4 rounded-xl border border-slate-100 dark:border-slate-800/50 transition-all">
@@ -154,38 +153,35 @@ export default function HabitModal({ isOpen, onClose, onSave, initialData }: Hab
                       className="flex items-center gap-2 overflow-hidden"
                     >
                       <div className="relative flex-1">
-                        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-violet-500">
+                        <div className="absolute inset-y-0 z-10 left-0 flex items-center pl-3 pointer-events-none text-violet-500">
                           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="lucide lucide-clock"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
                         </div>
-                        <select 
-                          value={remHour} 
-                          onChange={e => setRemHour(e.target.value)} 
-                          className="pl-9 flex h-11 w-full rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 text-slate-900 dark:text-slate-200"
-                        >
-                          {Array.from({length: 12}).map((_, i) => {
-                            const val = (i + 1).toString().padStart(2, '0');
-                            return <option key={val} value={val}>{val}</option>;
-                          })}
-                        </select>
+                        <CustomSelect
+                          value={remHour}
+                          onChange={setRemHour}
+                          className="pl-9 h-11 bg-white dark:bg-slate-900"
+                          options={Array.from({length: 12}).map((_, i) => ({
+                            value: (i + 1).toString().padStart(2, '0'),
+                            label: (i + 1).toString().padStart(2, '0')
+                          }))}
+                        />
                       </div>
                       <span className="text-slate-400 font-bold">:</span>
-                      <select 
-                        value={remMin} 
-                        onChange={e => setRemMin(e.target.value)} 
-                        className="flex h-11 w-20 rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 text-slate-900 dark:text-slate-200"
-                      >
-                        {["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"].map(m => (
-                          <option key={m} value={m}>{m}</option>
-                        ))}
-                      </select>
-                      <select 
-                        value={remAmPm} 
-                        onChange={e => setRemAmPm(e.target.value)} 
-                        className="flex h-11 w-20 rounded-lg border border-slate-200 bg-white dark:border-slate-700 dark:bg-slate-900 px-3 py-2 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 text-slate-900 dark:text-slate-200"
-                      >
-                        <option value="AM">AM</option>
-                        <option value="PM">PM</option>
-                      </select>
+                      <CustomSelect
+                        value={remMin}
+                        onChange={setRemMin}
+                        className="w-20 lg:w-24 h-11 bg-white dark:bg-slate-900"
+                        options={["00", "05", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55"].map(m => ({
+                          value: m,
+                          label: m
+                        }))}
+                      />
+                      <CustomSelect
+                        value={remAmPm}
+                        onChange={setRemAmPm}
+                        className="w-20 lg:w-24 h-11 bg-white dark:bg-slate-900"
+                        options={[{ value: "AM", label: "AM" }, { value: "PM", label: "PM" }]}
+                      />
                     </motion.div>
                   )}
                 </AnimatePresence>

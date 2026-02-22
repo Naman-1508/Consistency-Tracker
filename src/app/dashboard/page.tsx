@@ -9,11 +9,14 @@ import { Plus } from "lucide-react";
 import { useDashboardData } from "@/hooks/useDashboardData";
 import { motion } from "framer-motion";
 
+import NoteModal from "@/components/NoteModal";
+
 export default function DashboardPage() {
   const { habits, stats, isLoading, mutateHabits, mutateStats } = useDashboardData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingHabit, setEditingHabit] = useState<any>(null);
   const [deletingHabitId, setDeletingHabitId] = useState<string | null>(null);
+  const [habitToTrack, setHabitToTrack] = useState<any>(null);
 
   const handleTrack = async (habitId: string, note?: string) => {
     // Optimistic UI update logic could go here before the fetch
@@ -146,6 +149,7 @@ export default function DashboardPage() {
           <HabitList 
             habits={habits} 
             onTrack={handleTrack} 
+            onTrackRequest={setHabitToTrack}
             onEdit={openEditModal}
             onDelete={handleDeleteHabit}
           />
@@ -156,6 +160,18 @@ export default function DashboardPage() {
           onClose={() => setIsModalOpen(false)}
           onSave={handleSaveHabit}
           initialData={editingHabit}
+        />
+
+        <NoteModal
+          isOpen={!!habitToTrack}
+          habitName={habitToTrack?.title || ""}
+          onClose={() => setHabitToTrack(null)}
+          onSubmit={(note) => {
+            if (habitToTrack) {
+              handleTrack(habitToTrack.id, note);
+              setHabitToTrack(null);
+            }
+          }}
         />
 
         {/* Custom Delete Confirmation Modal using Framer Motion */}

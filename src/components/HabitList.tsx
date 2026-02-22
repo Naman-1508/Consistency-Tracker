@@ -16,11 +16,12 @@ interface Habit {
 interface HabitListProps {
   habits: Habit[];
   onTrack: (habitId: string) => Promise<void>;
+  onTrackRequest: (habit: Habit) => void;
   onEdit: (habit: Habit) => void;
   onDelete: (habitId: string) => Promise<void>;
 }
 
-export default function HabitList({ habits, onTrack, onEdit, onDelete }: HabitListProps) {
+export default function HabitList({ habits, onTrack, onTrackRequest, onEdit, onDelete }: HabitListProps) {
   const today = format(new Date(), "yyyy-MM-dd");
 
   if (habits.length === 0) {
@@ -51,6 +52,7 @@ export default function HabitList({ habits, onTrack, onEdit, onDelete }: HabitLi
             habit={habit}
             isCompletedToday={isCompletedToday}
             onTrack={onTrack}
+            onTrackRequest={onTrackRequest}
             onEdit={onEdit}
             onDelete={onDelete}
             index={index}

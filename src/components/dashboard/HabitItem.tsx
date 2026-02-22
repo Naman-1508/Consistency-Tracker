@@ -17,7 +17,8 @@ interface Habit {
 interface HabitItemProps {
   habit: Habit;
   isCompletedToday: boolean;
-  onTrack: (habitId: string, note?: string) => Promise<void>;
+  onTrack: (habitId: string) => Promise<void>; 
+  onTrackRequest: (habit: Habit) => void; 
   onEdit: (habit: Habit) => void;
   onDelete: (habitId: string) => void;
   index: number;
@@ -33,23 +34,19 @@ const CATEGORY_COLORS: Record<string, string> = {
   Other: "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300 border-slate-200 dark:border-slate-700",
 };
 
-export default function HabitItem({ habit, isCompletedToday, onTrack, onEdit, onDelete, index }: HabitItemProps) {
+export default function HabitItem({ habit, isCompletedToday, onTrack, onTrackRequest, onEdit, onDelete, index }: HabitItemProps) {
   const [isLoading, setIsLoading] = useState(false);
 
   const handleTrack = async () => {
-    setIsLoading(true);
-    let note = undefined;
-    
-    // Only ask for a note if we are tracking it (not un-tracking)
-    if (!isCompletedToday) {
-        const userInput = window.prompt(`Any notes for "${habit.title}" today? (Optional)`);
-        if (userInput !== null && userInput.trim() !== "") {
-            note = userInput.trim();
-        }
+    if (isCompletedToday) {
+      // Untrack immediately
+      setIsLoading(true);
+      await onTrack(habit.id);
+      setIsLoading(false);
+    } else {
+      // Request tracking (which opens the Note Modal on the Dashboard)
+      onTrackRequest(habit);
     }
-    
-    await onTrack(habit.id, note);
-    setIsLoading(false);
   };
 
   const catColorClass = habit.category && CATEGORY_COLORS[habit.category] 
