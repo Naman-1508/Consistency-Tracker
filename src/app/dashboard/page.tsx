@@ -15,14 +15,14 @@ export default function DashboardPage() {
   const [editingHabit, setEditingHabit] = useState<any>(null);
   const [deletingHabitId, setDeletingHabitId] = useState<string | null>(null);
 
-  const handleTrack = async (habitId: string) => {
+  const handleTrack = async (habitId: string, note?: string) => {
     // Optimistic UI update logic could go here before the fetch
     const today = new Date().toISOString().split("T")[0];
     
     // Quick optimistic update for the habit we just tracked
     mutateHabits(
       (currentHabits: any) => currentHabits?.map((h: any) => 
-        h.id === habitId ? { ...h, logs: [...h.logs, { id: 'temp', date: today }] } : h
+        h.id === habitId ? { ...h, logs: [...h.logs, { id: 'temp', date: today, note }] } : h
       ), 
       false // don't revalidate immediately, wait for the post request
     );
@@ -31,7 +31,7 @@ export default function DashboardPage() {
       await fetch(`/api/habits/${habitId}/track`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ date: today }),
+        body: JSON.stringify({ date: today, note }),
       });
       // Re-fetch both habits and stats to ensure everything is perfectly synced
       mutateHabits();

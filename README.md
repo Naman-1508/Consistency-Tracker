@@ -1,93 +1,117 @@
-# Consistency Tracker (Habit Tracking App)
+# 📈 Consistency Tracker (Full-Stack Habit Application)
 
-A modern, full-stack web application designed to help users track their daily habits and build consistent routines over time.
+A premium, fast, and secure full-stack habit tracking application built with **Next.js**, **React**, **TypeScript**, **Tailwind CSS**, and **Prisma**. This application allows users to create habits, track daily completions (with optional notes), visualize their progress, and build consistency.
 
-## 🚀 Live Demo
-https://consistency-tracker-delta.vercel.app
+---
 
-## ✨ Features
-- **User Authentication**: Secure Registration & Login using NextAuth and bcrypt.
-- **Habit CRUD**: Create, edit, and delete your habits easily.
-- **Daily Tracking**: One-click checkmark to log your habit for the current day.
-- **Insights & Progress**:
-  - Current continuous streak calculation.
-  - Overall completion percentage.
-  - 7-day visual weekly progress chart.
-- **Mobile-Responsive**: Clean, intuitive UI optimized for both desktop and mobile screens.
+## 🚀 Features
 
-## 🛠 Tech Stack
-- **Frontend**: Next.js 15 (App Router), React, Tailwind CSS, Lucide Icons
-- **Backend**: Next.js Route Handlers (API framework), NextAuth.js
-- **Database**: Prisma ORM, SQLite (local) / PostgreSQL (production capability via driver adapters)
+### Core Capabilities
+* **Secure Authentication:** Full registration and login flow using NextAuth.js and Bcrypt for secure password hashing.
+* **Habit Management:** Create, Read, Update, and Delete (CRUD) habits with custom categories, descriptions, and reminder times.
+* **Daily Tracking validation:** Prevent multiple completions of the same habit on the same day. 
+* **Analytics Dashboard:** Visual insights showing Current Streak, Weekly Progress (via animated bar charts), and overall completion rates.
 
-## 📐 Architecture Overview
-The application follows a standard full-stack Next.js architecture:
-1. **Client Components**: Located in `src/app` and `src/components`, handling interactive state, displaying data, and calling internal APIs. Fully styled with Tailwind CSS.
-2. **Server API Routes**: Located in `src/app/api`, implementing secure server-side logic in RESTful endpoints protecting unauthorized access.
-3. **Database Layer**: Managed by Prisma ORM (`src/lib/prisma.ts`). It handles transactions safely and validates schemas.
+### 🌟 Bonus Features & Technical Enhancements
+* **Premium UI/UX:** Built with Framer Motion and advanced Tailwind CSS, featuring physics-based micro-interactions, dynamic mesh gradient backgrounds, and fully responsive design.
+* **Strict Input Validation:** All API endpoints are structurally protected and type-checked using **Zod** schema validation, returning standardized error responses.
+* **Optimistic UI Data Fetching:** Utilizes **SWR** for intelligent client-side caching, instantly updating the UI when tracking a habit without waiting for the network request (zero latency feel).
+* **API Rate Limiting:** Custom Next.js Middleware protects API routes from spam and abuse (`/api/*`).
+* **Habit Notes:** Track more than just a checkbox—add contextual notes to a specific log when completing a habit.
 
-### Database Schema
-We use three core models:
-1. `User` - Authentication details (`email`, `passwordHash`, `name`).
-2. `Habit` - Habit definition (`title`, `description`, relationship to `User`).
-3. `HabitLog` - A log of completion. Contains `habitId` and `date`. A composite unique constraint on `[habitId, date]` prevents duplicate logs per day for the same habit.
+---
 
-*(See `prisma/schema.prisma` for the exact entity-relationship graph)*
+## 🏗️ Architecture Overview
 
-## 📦 Setup & Run Instructions
+The app follows a modern Full-Stack Next.js (App Router) architecture:
 
-**Prerequisites:** 
-- Node.js LTS (v18+)
-- npm or yarn
+1. **Frontend (Client):** Modular React components built with Tailwind CSS. State and data fetching are decoupled into a custom hook (`useDashboardData`) utilizing SWR.
+2. **Backend (Server):** Next.js API Route Handlers (`/api/habits`, `/api/auth`, etc.) handle secure transactions. Next.js Middleware sits in front of the API to handle Rate Limiting and JWT Authentication checks.
+3. **Database (ORM):** Prisma ORM handles structured, type-safe queries.
 
-**1. Clone the repository**
-```bash
-git clone https://github.com/Naman-1508/Consistency-Tracker
-cd consistency-tracker
-```
+---
 
-**2. Install dependencies**
-```bash
-npm install
-```
+## 🗄️ Database Schema & Relationships
 
-**3. Set up environment variables**
-Create a `.env` file in the root directory and add the following:
-```env
-DATABASE_URL="file:./dev.db"
-NEXTAUTH_URL="http://localhost:3000"
-NEXTAUTH_SECRET="a-very-secure-random-string"
-```
+The database is built on a relational model (PostgreSQL in production, SQLite for local dev).
 
-**4. Run database migrations**
-Generate the Prisma Client and push the schema to SQLite:
-```bash
-npx prisma db push
-npx prisma generate
-```
+**1. `User` Model**
+* Tracks `id`, `name`, `email` (unique), and `passwordHash`.
+* **Relationship:** A User has a one-to-many relationship with `Habit`.
 
-**5. Start the development server**
-```bash
-npm run dev
-```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+**2. `Habit` Model**
+* Tracks `id`, `title`, `description`, `category`, and `reminderTime`.
+* **Relationship:** A Habit belongs to one `User`, and has a one-to-many relationship with `HabitLog`.
 
-## 🚢 Deployment Steps (Vercel & PostgreSQL)
-To deploy this application to production, you should transition from SQLite to a managed PostgreSQL database (e.g., Neon, Supabase, Vercel Postgres).
+**3. `HabitLog` Model**
+* Tracks a specific completion event. Contains `id`, `date` (YYYY-MM-DD), and `note`.
+* **Constraint:** A unique compound constraint `@@unique([habitId, date])` is enforced at the database level to mathematically guarantee a habit is never tracked twice on the same day.
 
-1. Push your code to a GitHub repository.
-2. Set up a PostgreSQL database and obtain its connection URL.
-3. Update your `prisma/schema.prisma`:
-   - Keep `provider = "sqlite"` if using a SQLite-compatible remote edge database (like Turso).
-   - Change `provider = "postgresql"` if using standard PostgreSQL database and update adapter requirements accordingly.
-4. Import your project into Vercel.
-5. In the Vercel dashboard, configure the following Environment Variables:
-   - `DATABASE_URL`: Your production database URL.
-   - `NEXTAUTH_URL`: Your chosen domain URL (e.g., `https://my-habit-tracker.vercel.app`).
-   - `NEXTAUTH_SECRET`: Generate a secure random string (e.g., using `openssl rand -base64 32`).
-6. Deploy! Vercel will install dependencies, run the Next.js build, and serve your full-stack app globally.
+---
 
-## 🤝 Assumptions Made
-- A "Habit" is tracked once per day maximum.
-- Habit metrics are calculated locally. Timezones rely on the user's localized browser date (`new Date().toISOString().split("T")[0]`), which simplifies multi-timezone logic but locks logs to the local device's date perspective.
-- Using SQLite locally for frictionless reviewer setup.
+## 💻 Local Setup & Run Instructions
+
+### Prerequisites
+* Node.js (v18+)
+* npm or yarn
+
+### Steps
+1. **Clone the repository:**
+   ```bash
+   git clone <repository-url>
+   cd consistency-tracker
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables:**
+   Create a `.env` file in the root directory:
+   ```env
+   # Default to local SQLite for rapid development
+   DATABASE_URL="file:./dev.db"
+   NEXTAUTH_SECRET="your-super-secret-key-here"
+   NEXTAUTH_URL="http://localhost:3000"
+   ```
+
+4. **Initialize the Database:**
+   Run Prisma migrations to create the SQLite tables:
+   ```bash
+   npx prisma generate
+   npx prisma db push
+   ```
+
+5. **Start the Development Server:**
+   ```bash
+   npm run dev
+   ```
+   *Visit `http://localhost:3000` to view the application.*
+
+---
+
+## ☁️ Deployment Steps
+
+This application is designed to be easily deployed to **Vercel** with a serverless Postgres database.
+
+1. **Database Setup:**
+   * Create a Next.js Postgres, Supabase, or Neon database.
+   * Update the `prisma/schema.prisma` file to use PostgreSQL:
+     ```prisma
+     datasource db {
+       provider = "postgresql"
+       url      = env("DATABASE_URL")
+     }
+     ```
+2. **Push to GitHub:** Ensure your latest code is on the main branch.
+3. **Deploy to Vercel:**
+   * Import the project into Vercel.
+   * Add the Environment Variables (`DATABASE_URL`, `NEXTAUTH_SECRET`, `NEXTAUTH_URL`).
+   * Vercel will automatically run `npm install` and `npm run build`. Note: ensure `npx prisma generate` is in your build script in `package.json` (`"build": "prisma generate && next build"`).
+
+---
+
+## 🤔 Assumptions Made
+* **Timezones:** Habit tracking is currently based on the user's local browser timezone (ISO strings split by "T"). In a massive global application, this might require deeper UTC offset synchronization depending on when the user defines "midnight".
+* **Rate Limiting:** The in-memory rate map is sufficient for an assignment. In a heavy production environment (like serverless Vercel), this would be replaced by Redis (e.g., Upstash) because serverless functions don't share memory perfectly.

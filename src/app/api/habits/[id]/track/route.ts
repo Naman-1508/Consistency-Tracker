@@ -2,6 +2,8 @@ import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth/next";
 import { authOptions } from "@/lib/auth";
 import prisma from "@/lib/prisma";
+import { trackHabitSchema } from "@/lib/validations";
+import { z } from "zod";
 
 export async function POST(
     req: Request,
@@ -15,11 +17,8 @@ export async function POST(
     }
 
     try {
-        const { date } = await req.json();
-
-        if (!date) {
-            return NextResponse.json({ error: "Date is required" }, { status: 400 });
-        }
+        const body = await req.json();
+        const { date, note } = trackHabitSchema.parse(body);
 
         const habit = await prisma.habit.findUnique({
             where: { id: resolvedParams.id },
@@ -49,11 +48,15 @@ export async function POST(
                 data: {
                     habitId: resolvedParams.id,
                     date: date,
+                    note: note || null,
                 }
             });
             return NextResponse.json({ tracked: true }, { status: 201 });
         }
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return NextResponse.json({ error: "Validation failed", details: error.issues }, { status: 400 });
+        }
         console.error("Error tracking habit:", error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }

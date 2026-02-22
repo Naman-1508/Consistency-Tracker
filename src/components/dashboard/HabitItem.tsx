@@ -17,7 +17,7 @@ interface Habit {
 interface HabitItemProps {
   habit: Habit;
   isCompletedToday: boolean;
-  onTrack: (habitId: string) => Promise<void>;
+  onTrack: (habitId: string, note?: string) => Promise<void>;
   onEdit: (habit: Habit) => void;
   onDelete: (habitId: string) => void;
   index: number;
@@ -38,7 +38,17 @@ export default function HabitItem({ habit, isCompletedToday, onTrack, onEdit, on
 
   const handleTrack = async () => {
     setIsLoading(true);
-    await onTrack(habit.id);
+    let note = undefined;
+    
+    // Only ask for a note if we are tracking it (not un-tracking)
+    if (!isCompletedToday) {
+        const userInput = window.prompt(`Any notes for "${habit.title}" today? (Optional)`);
+        if (userInput !== null && userInput.trim() !== "") {
+            note = userInput.trim();
+        }
+    }
+    
+    await onTrack(habit.id, note);
     setIsLoading(false);
   };
 

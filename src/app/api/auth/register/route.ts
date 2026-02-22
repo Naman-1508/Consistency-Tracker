@@ -1,19 +1,15 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import prisma from "@/lib/prisma";
+import { registerSchema } from "@/lib/validations";
+import { z } from "zod";
 
 export async function POST(req: Request) {
     try {
-        const { name, email, password } = await req.json();
+        const body = await req.json();
 
-        if (!email || !password) {
-            return NextResponse.json({ error: "Missing email or password" }, { status: 400 });
-        }
-
-        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-        if (!emailRegex.test(email)) {
-            return NextResponse.json({ error: "Invalid email format" }, { status: 400 });
-        }
+        // Zod validation
+        const { name, email, password } = registerSchema.parse(body);
 
         const existingUser = await prisma.user.findUnique({
             where: {
@@ -43,6 +39,9 @@ export async function POST(req: Request) {
             }
         }, { status: 201 });
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return NextResponse.json({ error: "Validation failed", details: error.issues }, { status: 400 });
+        }
         console.error("Registration error:", error);
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
