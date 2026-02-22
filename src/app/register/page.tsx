@@ -106,7 +106,7 @@ export default function RegisterPage() {
                   <label className="text-sm font-medium leading-none text-slate-300" htmlFor="name">Full Name</label>
                   <Input
                     id="name"
-                    placeholder="John Doe"
+                    placeholder="Naman Jain"
                     required
                     value={name}
                     onChange={(e) => setName(e.target.value)}
