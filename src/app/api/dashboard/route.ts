@@ -18,7 +18,7 @@ export async function GET() {
                 id: true,
                 createdAt: true,
                 logs: {
-                    select: { date: true }
+                    select: { date: true, note: true }
                 }
             }
         });

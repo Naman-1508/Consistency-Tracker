@@ -7,12 +7,14 @@ import Link from "next/link";
 import { Card, CardContent, CardFooter } from "@/components/ui/Card";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
+import { Eye, EyeOff } from "lucide-react";
 
 export default function RegisterPage() {
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -113,19 +115,28 @@ export default function RegisterPage() {
                     className="bg-slate-950/50 border-slate-800 focus-visible:ring-blue-500 text-slate-200 placeholder:text-slate-600"
                   />
                 </div>
-                <div className="space-y-2">
+                <div className="space-y-2 relative">
                   <div className="flex items-center justify-between">
                     <label className="text-sm font-medium leading-none text-slate-300" htmlFor="password">Password</label>
                   </div>
-                  <Input
-                    id="password"
-                    type="password"
-                    placeholder="••••••••"
-                    required
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    className="bg-slate-950/50 border-slate-800 focus-visible:ring-blue-500 text-slate-200 placeholder:text-slate-600"
-                  />
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      type={showPassword ? "text" : "password"}
+                      placeholder="••••••••"
+                      required
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="bg-slate-950/50 border-slate-800 focus-visible:ring-blue-500 text-slate-200 placeholder:text-slate-600 pr-10"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-500 hover:text-slate-300 transition-colors"
+                    >
+                      {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                    </button>
+                  </div>
                 </div>
                 <Button 
                   type="submit" 

@@ -11,7 +11,7 @@ interface Habit {
   description: string | null;
   category: string | null;
   reminderTime: string | null;
-  logs: { id: string; date: string }[];
+  logs: { id: string; date: string; note?: string | null }[];
 }
 
 interface HabitItemProps {
@@ -36,6 +36,8 @@ const CATEGORY_COLORS: Record<string, string> = {
 
 export default function HabitItem({ habit, isCompletedToday, onTrack, onTrackRequest, onEdit, onDelete, index }: HabitItemProps) {
   const [isLoading, setIsLoading] = useState(false);
+  const todaysDate = new Date().toISOString().split("T")[0]; // YYYY-MM-DD local format based on previous logic 
+  const todaysLog = habit.logs.find(log => log.date === todaysDate);
 
   const handleTrack = async () => {
     if (isCompletedToday) {
@@ -114,6 +116,13 @@ export default function HabitItem({ habit, isCompletedToday, onTrack, onTrackReq
             <p className="text-sm text-slate-500/90 dark:text-slate-400/90 transition-colors duration-300 line-clamp-2 pr-8 sm:pr-0">
               {habit.description}
             </p>
+          )}
+
+          {/* Completion Note Display */}
+          {todaysLog?.note && (
+             <div className="mt-2 text-sm bg-violet-100/50 dark:bg-violet-900/30 border-l-2 border-violet-400 dark:border-violet-500 rounded-r-lg p-2.5 text-violet-800 dark:text-violet-200 shadow-sm animate-in fade-in slide-in-from-top-1 duration-300">
+               <p className="italic font-medium">"{todaysLog.note}"</p>
+             </div>
           )}
         </div>
       </div>
