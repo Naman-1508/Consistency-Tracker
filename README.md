@@ -2,6 +2,8 @@
 
 A premium, fast, and secure full-stack habit tracking application built with **Next.js**, **React**, **TypeScript**, **Tailwind CSS**, and **Prisma**. This application allows users to create habits, track daily completions (with optional notes), visualize their progress, and build consistency.
 
+Take a look at : https://consistency-tracker-delta.vercel.app/
+
 ---
 
 ## 🚀 Features
